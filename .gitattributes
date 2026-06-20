@@ -1,0 +1,4 @@
+# Force GitHub's language detection (Linguist) to report this repo as Dockerfile.
+# This repo is Docker configuration, so classify the Compose/config files as Dockerfile.
+docker-compose.yml linguist-language=Dockerfile
+config.yaml        linguist-language=Dockerfile
