@@ -1,0 +1,39 @@
+# LiteLLM proxy config.
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+#
+# Each entry maps a friendly `model_name` (what clients request) to an
+# underlying provider model. API keys are read from environment variables
+# defined in your .env file.
+
+model_list:
+  # --- Anthropic ---
+  - model_name: claude-haiku-4-5
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # --- Google Gemini ---
+  - model_name: gemini-flash
+    litellm_params:
+      model: gemini/gemini-2.5-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # --- OpenAI ---
+  - model_name: gpt-5.4-mini
+    litellm_params:
+      model: openai/gpt-5.4-mini
+      api_key: os.environ/OPENAI_API_KEY
+
+  # --- Local Ollama (requires Ollama running on the host) ---
+  - model_name: llama3
+    litellm_params:
+      model: ollama/llama3
+      api_base: http://host.docker.internal:11434
+
+litellm_settings:
+  drop_params: true          # silently drop unsupported params instead of erroring
+  num_retries: 3
+  request_timeout: 600
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
