@@ -1,4 +1,4 @@
-# litellm-docker-container
+# LiteLLM Docker Container
 
 Run the [LiteLLM](https://docs.litellm.ai/) proxy locally with Docker Compose.
 LiteLLM gives you a single OpenAI-compatible endpoint in front of many model
