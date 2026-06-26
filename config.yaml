@@ -32,12 +32,12 @@ model_list:
   # --- Local Ollama (requires Ollama running on the host) ---
   - model_name: llama3.2
     litellm_params:
-      model: ollama/llama3.2:1b
+      model: ollama_chat/llama3.2:1b
       api_base: http://host.docker.internal:11434
 
   - model_name: deepseek-r1
     litellm_params:
-      model: ollama/deepseek-r1:1.5b
+      model: ollama_chat/deepseek-r1:1.5b
       api_base: http://host.docker.internal:11434
 
 litellm_settings:
