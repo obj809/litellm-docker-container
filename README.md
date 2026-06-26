@@ -8,6 +8,7 @@ keys, and request logging backed by Postgres.
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) with Compose v2
+- The external `webnet` network (see [Docker network](#docker-network))
 
 ## Quick start
 
@@ -18,10 +19,13 @@ cp .env.example .env
 #    - set LITELLM_SALT_KEY (`openssl rand -hex 32`) — set once, never change it
 #    - add at least one provider API key (see .env.example)
 
-# 2. Start the proxy + database
+# 2. Create the shared network (one time)
+docker network create webnet
+
+# 3. Start the proxy + database
 docker compose up -d
 
-# 3. Check it's healthy
+# 4. Check it's healthy
 curl http://localhost:4000/health/liveliness
 ```
 
@@ -100,6 +104,26 @@ docker compose restart litellm
 Each `model_name` is the alias clients request; `litellm_params.model` is the
 real provider model. See the
 [provider docs](https://docs.litellm.ai/docs/providers) for supported models.
+
+## Docker network
+
+The `litellm` service joins an external Docker network named **`webnet`**, so it
+can share a network with other containers (e.g. a reverse proxy or app) you run
+outside this Compose project. Because it's declared `external: true`, Compose
+won't create it for you — it must exist before `docker compose up`:
+
+```bash
+docker network create webnet              # create it (one time)
+docker network ls                         # confirm it's listed
+docker network inspect webnet             # see attached containers + subnet
+docker network connect webnet <container> # attach another running container
+docker network disconnect webnet <container>
+docker network rm webnet                  # remove (after `docker compose down`)
+```
+
+The Postgres `db` service stays off `webnet` on purpose — only the proxy is
+reachable from it. To attach another container at start time, use
+`docker run --network webnet ...`.
 
 ## Common commands
 
