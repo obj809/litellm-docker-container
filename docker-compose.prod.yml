@@ -1,0 +1,73 @@
+# Production deployment for the Hostinger VPS (see HANDOFF.md).
+# Run standalone on the server:
+#   docker network create webnet                     # one-time, if missing
+#   docker compose -f docker-compose.prod.yml up -d
+
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm-database:main-stable
+    container_name: litellm          # NPM routes by this name: http://litellm:4000
+    restart: always
+    # No published ports: reachable only via `webnet` (NPM), never the public host.
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: "postgresql://litellm:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/litellm"
+      STORE_MODEL_IN_DB: "True"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    networks:
+      - default
+      - webnet
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:4000/health/liveliness || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  db:
+    image: postgres:16-alpine
+    container_name: litellm-db
+    restart: always
+    environment:
+      POSTGRES_USER: litellm
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}"
+      POSTGRES_DB: litellm
+    volumes:
+      - litellm-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U litellm -d litellm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+networks:
+  webnet:
+    external: true
+  default:
+
+volumes:
+  litellm-pgdata:

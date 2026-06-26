@@ -136,8 +136,9 @@ docker compose pull              # update to the latest image
 
 ## Files
 
-| File                 | Purpose                                              |
-| -------------------- | ---------------------------------------------------- |
-| `docker-compose.yml` | LiteLLM proxy + Postgres services                    |
-| `config.yaml`        | Model definitions and proxy settings                 |
-| `.env.example`       | Template for secrets (copy to `.env`, not committed) |
+| File                      | Purpose                                              |
+| ------------------------- | ---------------------------------------------------- |
+| `docker-compose.yml`      | Local dev: LiteLLM proxy + Postgres, port published  |
+| `docker-compose.prod.yml` | Production: no published port, env-driven DB password |
+| `config.yaml`             | Model definitions and proxy settings                 |
+| `.env.example`            | Template for secrets (copy to `.env`, not committed) |
