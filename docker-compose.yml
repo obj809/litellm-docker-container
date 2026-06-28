@@ -13,6 +13,9 @@ services:
       # Fail startup if the master key is missing — without it LiteLLM boots
       # unauthenticated and is open to everything on webnet (see TODO.md).
       LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY:?set LITELLM_MASTER_KEY in .env}"
+      # Dev default: native Ollama on the host via Docker Desktop's alias.
+      # Override in .env to point elsewhere.
+      OLLAMA_API_BASE: "${OLLAMA_API_BASE:-http://host.docker.internal:11434}"
     volumes:
       - ./config.yaml:/app/config.yaml:ro
     command: ["--config", "/app/config.yaml", "--port", "4000"]
