@@ -1,24 +1,19 @@
-# Production deployment for the Hostinger VPS (see HANDOFF.md).
+# Production deployment for a VPS.
 # Run standalone on the server:
-#   docker network create webnet                     # one-time, if missing
+#   docker network create webnet
 #   docker compose -f docker-compose.prod.yml up -d
 
 services:
   litellm:
     image: ghcr.io/berriai/litellm-database:main-stable
-    container_name: litellm          # NPM routes by this name: http://litellm:4000
+    container_name: litellm
     restart: always
-    # No published ports: reachable only via `webnet` (NPM), never the public host.
     env_file:
       - .env
     environment:
       DATABASE_URL: "postgresql://litellm:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@db:5432/litellm"
       STORE_MODEL_IN_DB: "True"
-      # Fail the deploy if the master key is missing — without it LiteLLM boots
-      # unauthenticated and is open to everything on webnet (see TODO.md).
       LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY:?set LITELLM_MASTER_KEY in .env}"
-      # Prod default: the `ollama` container, reached by name over webnet.
-      # host.docker.internal does not exist on the Linux VPS. Override in .env.
       OLLAMA_API_BASE: "${OLLAMA_API_BASE:-http://ollama:11434}"
     volumes:
       - ./config.yaml:/app/config.yaml:ro

@@ -1,7 +1,7 @@
 # LiteLLM proxy config.
 # Docs: https://docs.litellm.ai/docs/proxy/configs
 #
-# Each entry maps a friendly `model_name` (what clients request) to an
+# Each entry maps a `model_name` (what clients request) to an
 # underlying provider model. API keys are read from environment variables
 # defined in your .env file.
 
@@ -34,6 +34,7 @@ model_list:
   #   dev  -> http://host.docker.internal:11434 (native Ollama on the host)
   #   prod -> http://ollama:11434               (ollama container on webnet)
   # Each compose file supplies the right default via OLLAMA_API_BASE.
+
   - model_name: llama3.2
     litellm_params:
       model: ollama_chat/llama3.2:1b
@@ -45,7 +46,7 @@ model_list:
       api_base: os.environ/OLLAMA_API_BASE
 
 litellm_settings:
-  drop_params: true          # silently drop unsupported params instead of erroring
+  drop_params: true
   num_retries: 3
   request_timeout: 600
 
