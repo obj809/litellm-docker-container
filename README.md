@@ -113,15 +113,15 @@ outside this Compose project. Because it's declared `external: true`, Compose
 won't create it for you — it must exist before `docker compose up`:
 
 ```bash
-docker network create webnet              # create it (one time)
-docker network ls                         # confirm it's listed
-docker network inspect webnet             # see attached containers + subnet
-docker network connect webnet <container> # attach another running container
+docker network create webnet
+docker network ls
+docker network inspect webnet
+docker network connect webnet <container>
 docker network disconnect webnet <container>
-docker network rm webnet                  # remove (after `docker compose down`)
+docker network rm webnet
 ```
 
-The Postgres `db` service stays off `webnet` on purpose — only the proxy is
+The Postgres `db` service stays off `webnet`, only the proxy is
 reachable from it. To attach another container at start time, use
 `docker run --network webnet ...`.
 
